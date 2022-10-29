@@ -1,5 +1,11 @@
 # Cream Finance Deployment Script
-
+### Quickstart: deploy to Evmos testnet
+```
+yarn install
+cp .env.default .env
+Fill out .env with the private key you copy from metamask
+npx hardhat deploy --network evmos_testnet
+```
 ## Installation
 
     git clone https://github.com/CreamFi/cream-deployment
@@ -17,7 +23,7 @@ abd fill in all the variables in `.env`
 
 ### hardhat.config.ts
 Modify `namedAccounts` in `hardhat.config.ts` and add networks if necessary.
-Add PriceOracleV1
+
 ## Deployment
 ### Deploy Comptroller, PriceOracle, InterestRateModel, etc.
 
