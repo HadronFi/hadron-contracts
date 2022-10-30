@@ -13,22 +13,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     Stable = 'StableIRM',
     Gov = 'GovIRM',
   }
-  
-  const USDT = await getOrNull('USDT')
-  if (USDT) {
-    log(`reusing USDC at ${USDT.address}`)
-  } else {
-    await deploy("USDT", {
-      from: deployer,
-      log: true,
-      contract: 'GenericERC20',
-      args: ["1000000", "Tether USD", "USDT", "6"],
-    })
-  }
 
-  const crSymbol = 'crUSDT'
-  const crName = 'Tether USD'
-  const underlyingAddress = (await get("USDT")).address
+  const crSymbol = 'crWEVMOS'
+  const crName = 'Wrapped Evmos'
+  const underlyingAddress = '0xe2c5d47277C2c539f0F6A51F11f0C5161c22fbc9'
   const interestRateModel = IRM.Major
   const exchangeRate = '0.02'
 
@@ -46,9 +34,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     18 + underlyingDecimal - 8,
   )
 
-  const cToken = await getOrNull(crSymbol)
-  if (cToken) {
-    log(`reusing cToken at ${cToken.address}`)
+  const cWEVMOS = await getOrNull(crSymbol)
+  if (cWEVMOS) {
+    log(`reusing cWEVMOS at ${cWEVMOS.address}`)
   } else {
     await deploy(crSymbol, {
       from: deployer,

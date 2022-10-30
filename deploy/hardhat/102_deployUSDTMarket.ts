@@ -22,7 +22,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       from: deployer,
       log: true,
       contract: 'GenericERC20',
-      args: ["1000000", "Tether USD", "USDT", "6"],
+      args: ["1000000", "USD Coin", "USDC", "6"],
     })
   }
 
