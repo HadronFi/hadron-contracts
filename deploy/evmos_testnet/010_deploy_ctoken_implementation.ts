@@ -30,4 +30,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 func.tags = ['CTokenImplementation'];
-func.runAtTheEnd = true;
+// func.runAtTheEnd = true;
