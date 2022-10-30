@@ -6,6 +6,16 @@ cp .env.default .env
 Fill out .env with the private key you copy from metamask
 npx hardhat deploy --network evmos_testnet
 ```
+
+### Quickstart: deploy to localhost
+```
+yarn install
+cp .env.default .env
+Fill out .env with the private key you copy from metamask
+npx hardhat node --no-deploy
+npx hardhat deploy --network localhost
+```
+
 ## Installation
 
     git clone https://github.com/CreamFi/cream-deployment

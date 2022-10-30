@@ -46,10 +46,10 @@ contract Comptroller is ComptrollerV1Storage, ComptrollerInterface, ComptrollerE
     event NewLiquidityMining(address oldLiquidityMining, address newLiquidityMining);
 
     /// @notice Emitted when an action is paused globally
-    event ActionPaused(string action, bool pauseState);
+    event ActionPaused1(string action, bool pauseState);
 
     /// @notice Emitted when an action is paused on a market
-    event ActionPaused(CToken cToken, string action, bool pauseState);
+    event ActionPaused2(CToken cToken, string action, bool pauseState);
 
     /// @notice Emitted when borrow cap for a cToken is changed
     event NewBorrowCap(CToken indexed cToken, uint256 newBorrowCap);
@@ -1222,7 +1222,7 @@ contract Comptroller is ComptrollerV1Storage, ComptrollerInterface, ComptrollerE
         require(msg.sender == admin || state == true, "admin only");
 
         mintGuardianPaused[address(cToken)] = state;
-        emit ActionPaused(cToken, "Mint", state);
+        emit ActionPaused2(cToken, "Mint", state);
         return state;
     }
 
@@ -1232,7 +1232,7 @@ contract Comptroller is ComptrollerV1Storage, ComptrollerInterface, ComptrollerE
         require(msg.sender == admin || state == true, "admin only");
 
         borrowGuardianPaused[address(cToken)] = state;
-        emit ActionPaused(cToken, "Borrow", state);
+        emit ActionPaused2(cToken, "Borrow", state);
         return state;
     }
 
@@ -1242,7 +1242,7 @@ contract Comptroller is ComptrollerV1Storage, ComptrollerInterface, ComptrollerE
         require(msg.sender == admin || state == true, "admin only");
 
         flashloanGuardianPaused[address(cToken)] = state;
-        emit ActionPaused(cToken, "Flashloan", state);
+        emit ActionPaused2(cToken, "Flashloan", state);
         return state;
     }
 
@@ -1251,7 +1251,7 @@ contract Comptroller is ComptrollerV1Storage, ComptrollerInterface, ComptrollerE
         require(msg.sender == admin || state == true, "admin only");
 
         transferGuardianPaused = state;
-        emit ActionPaused("Transfer", state);
+        emit ActionPaused1("Transfer", state);
         return state;
     }
 
@@ -1260,7 +1260,7 @@ contract Comptroller is ComptrollerV1Storage, ComptrollerInterface, ComptrollerE
         require(msg.sender == admin || state == true, "admin only");
 
         seizeGuardianPaused = state;
-        emit ActionPaused("Seize", state);
+        emit ActionPaused1("Seize", state);
         return state;
     }
 

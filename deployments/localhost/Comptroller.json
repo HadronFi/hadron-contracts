@@ -1,5 +1,5 @@
 {
-  "address": "0xdF9031F9552B48b55667bd4fD4aD1a538B8c297c",
+  "address": "0x381445710b5e73d34aF196c53A3D5cDa58EDBf7A",
   "abi": [
     {
       "inputs": [],
@@ -23,7 +23,7 @@
           "type": "bool"
         }
       ],
-      "name": "ActionPaused1",
+      "name": "ActionPaused",
       "type": "event"
     },
     {
@@ -48,7 +48,7 @@
           "type": "bool"
         }
       ],
-      "name": "ActionPaused2",
+      "name": "ActionPaused",
       "type": "event"
     },
     {

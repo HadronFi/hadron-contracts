@@ -14,21 +14,21 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     Gov = 'GovIRM',
   }
   
-  const USDT = await getOrNull('USDT')
-  if (USDT) {
-    log(`reusing USDC at ${USDT.address}`)
+  const USDC = await getOrNull('USDC')
+  if (USDC) {
+    log(`reusing USDC at ${USDC.address}`)
   } else {
-    await deploy("USDT", {
+    await deploy("USDC", {
       from: deployer,
       log: true,
       contract: 'GenericERC20',
-      args: ["1000000", "Tether USD", "USDT", "6"],
+      args: ["1000000", "USD Coin", "USDC", "6"],
     })
   }
 
-  const crSymbol = 'crUSDT'
-  const crName = 'Tether USD'
-  const underlyingAddress = (await get("USDT")).address
+  const crSymbol = 'crUSDC'
+  const crName = 'USD Coin'
+  const underlyingAddress = (await get("USDC")).address
   const interestRateModel = IRM.Major
   const exchangeRate = '0.02'
 
