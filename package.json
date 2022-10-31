@@ -4,11 +4,11 @@
   "main": "index.js",
   "author": "Jeremy Yang <jeremy@cream.finance>",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
     "@nomiclabs/hardhat-etherscan": "^2.1.6",
     "@nomiclabs/hardhat-waffle": "^2.0.0",
+    "@openzeppelin/contracts": "^4.7.3",
     "@types/chai": "^4.2.15",
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.35",
@@ -24,5 +24,8 @@
     "mocha": "^8.3.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@adrastia-oracle/adrastia-core": "^1.0.0"
   }
 }
