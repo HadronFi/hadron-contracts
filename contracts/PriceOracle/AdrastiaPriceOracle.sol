@@ -1,29 +1,13 @@
 pragma solidity ^0.6.0;
 
-import "./PriceOracle.sol";
-import "../CErc20.sol";
-
-
 /**
  * @title IOracle
  * @notice An interface that defines a price and liquidity oracle.
  */
 interface IOracle {
-    /**
-     * @notice Gets the price of a token in terms of the quote token along with the liquidity levels of the token and
-     *  quote token in the underlying pool, reverting if the quotation is older than the maximum allowable age.
-     * @dev Using maxAge of 0 can be gas costly and the returned data is easier to manipulate.
-     * @param token The token to get the price of.
-     * @param maxAge The maximum age of the quotation, in seconds. If 0, the function gets the instant rates as of the
-     *   latest block, straight from the source.
-     * @return price The quote token denominated price for a whole token.
-     * @return tokenLiquidity The amount of the token that is liquid in the underlying pool, in wei.
-     * @return quoteTokenLiquidity The amount of the quote token that is liquid in the underlying pool, in wei.
-     */
-    function consult(address token, uint256 maxAge)
-        public
+    function consultPrice(address token, uint256 maxAge)
+        external
         view
-        virtual
         returns (
             uint112 price,
             uint112 tokenLiquidity,
@@ -31,8 +15,11 @@ interface IOracle {
         );
 }
 
+interface ICErc20{
+    function underlying() external view returns (address);
+}
 
-contract AdrastiaPriceOracle is PriceOracle {
+contract AdrastiaPriceOracle {
     mapping(address => uint256) backupPrices;
     event PricePosted(
         address asset,
@@ -48,47 +35,27 @@ contract AdrastiaPriceOracle is PriceOracle {
         oracle = IOracle(addr);
     }
 
-    function getPrice(address token) public view returns (uint256){
-        uint112 price;
-        // Gets the price of `token` with the requirement that the price is 2 hours old or less
-        try oracle.consultPrice(token, 2 hours) returns (uint112 adrastiaPrice) {
-            price = adrastiaPrice;
-        } catch Error(string memory) {
-            // High-level error - maybe the price is older than 2 hours... use fallback oracle
-            emit ExpiredPrice(underlyingAsset, address(oracle));
-            price = backupPrices[underlyingAsset];
-        } catch (bytes memory) {
-            // Low-level error... use fallback oracle
-            price = backupPrices[underlyingAsset];
-        }
-        require(price != 0, "MISSING_PRICE");
-        emit Price(price);
-        // We have our price, now let's use it
-        return uint256(price);
+    function getPrice(address token) public returns (uint256){
+        (uint112 adrastiaPrice,uint112 tokenLiquidity, uint112 quoteTokenLiquidity) = oracle.consultPrice(token, 0);
+        return uint256(adrastiaPrice);
     }
 
-    function getUnderlyingPrice(CToken cToken) public view returns (uint256) {
-        address underlyingAsset = address(CErc20(address(cToken)).underlying());
-        uint112 price;
+    function getUnderlyingPrice(address cToken) public view returns (uint256) {
+        address underlyingAsset = ICErc20(address(cToken)).underlying();
+        uint256 price;
         // Gets the price of `token` with the requirement that the price is 2 hours old or less
-        try oracle.consultPrice(underlyingAsset, 2 hours) returns (uint112 adrastiaPrice) {
-            price = adrastiaPrice;
-        } catch Error(string memory) {
-            // High-level error - maybe the price is older than 2 hours... use fallback oracle
-            emit ExpiredPrice(underlyingAsset, address(oracle));
-            price = backupPrices[underlyingAsset];
+        try oracle.consultPrice(underlyingAsset, 2 hours) returns (uint112 adrastiaPrice, uint112 tokenLiquidity, uint112 quoteTokenLiquidity) {
+            price = uint256(adrastiaPrice);
         } catch (bytes memory) {
-            // Low-level error... use fallback oracle
             price = backupPrices[underlyingAsset];
         }
 
         require(price != 0, "MISSING_PRICE");
-        // We have our price, now let's use it
         return uint256(price);
     }
 
-    function setUnderlyingPrice(CToken cToken, uint256 underlyingPriceMantissa) public {
-        address asset = address(CErc20(address(cToken)).underlying());
+    function setUnderlyingPrice(address cToken, uint256 underlyingPriceMantissa) public {
+        address asset = address(ICErc20(address(cToken)).underlying());
         emit PricePosted(asset, backupPrices[asset], underlyingPriceMantissa, underlyingPriceMantissa);
         backupPrices[asset] = underlyingPriceMantissa;
     }

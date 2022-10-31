@@ -122,7 +122,7 @@ const config: HardhatUserConfig = {
     evmos_mainnet: {
       url: 'https://eth.bd.evmos.org:8545',
       chainId: 9001,
-      deploy: ['./deploy/evmos/'],
+      deploy: ['./deploy/evmos_mainnet/'],
       accounts:
         process.env.DEPLOY_PRIVATE_KEY == undefined
           ? []
