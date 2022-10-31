@@ -16,6 +16,27 @@ npx hardhat node --no-deploy
 npx hardhat deploy --network localhost
 ```
 
+### Evmos Mainnet Deployment
+axl = axelar, ce = celer, g = gravity
+USDC - has oracle, cf = .8, rf = .2
+WEVMOS - has oracle, cf = .75, rf = .2
+OSMO - has oracle, cf = .6, rf = .25
+JUNO - has oracle, cf = .6, rf = .25
+ATOM - has oracle, cf = .73, rf = .2
+
+Near future, as soon as we have oracle support
+WETH - axl, ce, g
+USDT - axl, ce, g 
+DAI - axl, ce, g
+axlWBTC? - why wbtc
+
+Far Future
+EEUR - emoney euro
+REGEN - regen network
+STARS - stargaze
+GRAV - gravity bridge token
+
+
 ## Installation
 
     git clone https://github.com/CreamFi/cream-deployment

@@ -9,17 +9,32 @@ import './tasks'
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   solidity: {
-    version: '0.5.17',
-    settings: {
-      optimizer: {
-        enabled: true,
+    compilers: [
+      {
+        version: "0.5.16",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 10000,
+          },
+        },
       },
-    },
+      {
+        version: "0.6.0",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 10000,
+          },
+        },
+      },
+    ]
   },
   namedAccounts: {
     deployer: {
       localhost: 1,
       evmos_testnet: '0x70b5d93d519C52a00839fEd5f87947D4Bc82ef6d',
+      evmos_mainnet: '0x70b5d93d519C52a00839fEd5f87947D4Bc82ef6d',
     },
     poster: {
       localhost: 1,
@@ -50,7 +65,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      deploy: ['./deploy/hardhat']
+      deploy: ['./deploy/hardhat'],
     },
     mainnet: {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_TOKEN}`,
