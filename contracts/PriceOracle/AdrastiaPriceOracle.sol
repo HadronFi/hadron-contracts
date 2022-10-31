@@ -1,11 +1,24 @@
 pragma solidity ^0.6.0;
 
 /**
- * @title IOracle
+ * @title IPriceOracle
  * @notice An interface that defines a price and liquidity oracle.
  */
-interface IOracle {
-    function consultPrice(address token, uint256 maxAge)
+interface IPriceOracle {
+    function consultPrice(address token, uint256 maxAge) external view returns (uint112 price);
+}
+
+interface IOracle{
+    function consult(address token)
+        external
+        view
+        returns (
+            uint112 price,
+            uint112 tokenLiquidity,
+            uint112 quoteTokenLiquidity
+        );
+
+    function consult(address token, uint256 maxAge)
         external
         view
         returns (
@@ -29,28 +42,35 @@ contract AdrastiaPriceOracle {
     );
     event ExpiredPrice(address asset, address oracle);
     event Price(uint112 price);
-    IOracle oracle = IOracle(0x51d3d22965Bb2CB2749f896B82756eBaD7812b6d);
+    address oracle = 0x51d3d22965Bb2CB2749f896B82756eBaD7812b6d;
 
     function setOracleAddress(address addr) public {
-        oracle = IOracle(addr);
+        oracle = addr;
     }
 
-    function getPrice(address token) public returns (uint256){
-        (uint112 adrastiaPrice,uint112 tokenLiquidity, uint112 quoteTokenLiquidity) = oracle.consultPrice(token, 0);
+    function getPrice(address token, uint256 maxAge) public returns (uint256){
+        uint112 adrastiaPrice = IPriceOracle(oracle).consultPrice(token, 0);
         return uint256(adrastiaPrice);
+    }
+
+    function getOraclePrice(address token, uint256 maxAge) public returns (uint256){
+        (
+            uint112 price,
+            uint112 tokenLiquidity,
+            uint112 quoteTokenLiquidity
+        ) = IOracle(oracle).consult(token, maxAge);
+        return uint256(price);
     }
 
     function getUnderlyingPrice(address cToken) public view returns (uint256) {
         address underlyingAsset = ICErc20(address(cToken)).underlying();
         uint256 price;
         // Gets the price of `token` with the requirement that the price is 2 hours old or less
-        try oracle.consultPrice(underlyingAsset, 2 hours) returns (uint112 adrastiaPrice, uint112 tokenLiquidity, uint112 quoteTokenLiquidity) {
+        try IPriceOracle(oracle).consultPrice(underlyingAsset, 2 hours) returns (uint112 adrastiaPrice) {
             price = uint256(adrastiaPrice);
         } catch (bytes memory) {
             price = backupPrices[underlyingAsset];
         }
-
-        require(price != 0, "MISSING_PRICE");
         return uint256(price);
     }
 
