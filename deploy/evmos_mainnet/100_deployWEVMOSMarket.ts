@@ -14,11 +14,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     Gov = 'GovIRM',
   }
 
-  const crName = 'WEVMOS'
+  const hName = 'WEVMOS'
   const interestRateModel = IRM.Major
-  
-  const crSymbol = 'cr' + crName
-  const underlyingAddress = (await get(crName)).address
+
+  const hSymbol = 'h' + hName
+  const underlyingAddress = (await get(hName)).address
   const exchangeRate = '0.02'
 
   const comptrollerAddress = (await get('Comptroller')).address
@@ -35,11 +35,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     18 + underlyingDecimal - 8,
   )
 
-  const cToken = await getOrNull(crSymbol)
+  const cToken = await getOrNull(hSymbol)
   if (cToken) {
-    log(`reusing ${crSymbol} at ${cToken.address}`)
+    log(`reusing ${hSymbol} at ${cToken.address}`)
   } else {
-    await deploy(crSymbol, {
+    await deploy(hSymbol, {
       from: deployer,
       contract: 'CErc20Delegator',
       args: [
@@ -47,8 +47,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         comptrollerAddress,
         irmAddress,
         initialExchangeRate,
-        crName,
-        crSymbol,
+        hName,
+        hSymbol,
         8,
         cTokenAdminAddress,
         cTokenImplementationAddress,

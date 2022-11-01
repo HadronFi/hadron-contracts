@@ -62,7 +62,8 @@ contract AdrastiaPriceOracle {
     /**
      * @notice set the price of an asset
      * @param asset The address of the asset
-     * @param price The price to set the asset to
+     * @param price The price to set the asset to: 
+     * If WEVMOS, set the price with 6 decimals, otherwise use 18 decimals but denominate the price in WEVMOS
      */
     function setDirectPrice(address asset, uint256 price) public onlyOwner {
         emit PricePosted(asset, backupPrices[asset], price, price);
