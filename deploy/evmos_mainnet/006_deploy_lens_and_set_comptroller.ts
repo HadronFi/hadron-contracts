@@ -52,7 +52,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       'Comptroller',
       { from: deployer },
       '_setPriceOracle',
-      (await get('SimplePriceOracle')).address,
+      (await get('AdrastiaPriceOracle')).address,
     )
     await execute(
       'Comptroller',
