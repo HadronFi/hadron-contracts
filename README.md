@@ -18,11 +18,17 @@ npx hardhat deploy --network localhost
 
 ### Evmos Mainnet Deployment
 axl = axelar, ce = celer, g = gravity
-USDC - has oracle, cf = .8, rf = .2
+
 WEVMOS - has oracle, cf = .75, rf = .2
 OSMO - has oracle, cf = .6, rf = .25
 JUNO - has oracle, cf = .6, rf = .25
 ATOM - has oracle, cf = .73, rf = .2
+axl WBTC - cf = .7, rf = .2
+g USDT - cf = .8, rf = .2
+g DAI - cf = .8, rf = .2
+{axl, ce, g} WETH - has oracle, cf = .73, rf = .2
+{axl, ce, g} USDC - has oracle, cf = .8, rf = .2
+
 
 Near future, as soon as we have oracle support
 WETH - axl, ce, g

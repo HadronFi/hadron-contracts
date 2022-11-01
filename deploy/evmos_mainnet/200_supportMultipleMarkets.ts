@@ -10,6 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer, admin } = await getNamedAccounts()
 
   const markets = [
+    
     (await get('crWEVMOS')).address,
     (await get('crUSDC')).address,
     (await get('crUSDT')).address,
@@ -23,7 +24,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   for (let i = 0; i < markets.length; i++) {
     await execute(
-      'SimplePriceOracle',
+      'AdrastiaPriceOracle',
       { from: deployer, log: true },
       'setUnderlyingPrice',
       markets[i],

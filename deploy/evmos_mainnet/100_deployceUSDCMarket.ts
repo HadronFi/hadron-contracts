@@ -6,30 +6,19 @@ const { parseUnits } = ethers.utils
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre
   const { deploy, get, getArtifact, getOrNull, log } = deployments
-  const { deployer, admin } = await getNamedAccounts()
+  const { deployer } = await getNamedAccounts()
 
   enum IRM {
     Major = 'MajorIRM',
     Stable = 'StableIRM',
     Gov = 'GovIRM',
   }
-  
-  const USDT = await getOrNull('USDT')
-  if (USDT) {
-    log(`reusing USDC at ${USDT.address}`)
-  } else {
-    await deploy("USDT", {
-      from: deployer,
-      log: true,
-      contract: 'GenericERC20',
-      args: ["1000000", "Tether USD", "USDT", "6"],
-    })
-  }
 
-  const crSymbol = 'crUSDT'
-  const crName = 'Tether USD'
-  const underlyingAddress = (await get("USDT")).address
-  const interestRateModel = IRM.Major
+  const crName = 'ceUSDC'
+  const interestRateModel = IRM.Stable
+
+  const crSymbol = 'cr' + crName
+  const underlyingAddress = (await get(crName)).address
   const exchangeRate = '0.02'
 
   const comptrollerAddress = (await get('Comptroller')).address
@@ -48,7 +37,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const cToken = await getOrNull(crSymbol)
   if (cToken) {
-    log(`reusing cToken at ${cToken.address}`)
+    log(`reusing ${crSymbol} at ${cToken.address}`)
   } else {
     await deploy(crSymbol, {
       from: deployer,

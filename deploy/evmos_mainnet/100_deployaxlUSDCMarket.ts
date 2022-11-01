@@ -14,9 +14,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     Gov = 'GovIRM',
   }
 
-  const crName = 'WEVMOS'
-  const interestRateModel = IRM.Major
-  
+  const crName = 'axlUSDC'
+  const interestRateModel = IRM.Stable
+
   const crSymbol = 'cr' + crName
   const underlyingAddress = (await get(crName)).address
   const exchangeRate = '0.02'
