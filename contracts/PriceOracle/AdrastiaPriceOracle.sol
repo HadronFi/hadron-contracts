@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface IPriceOracle {
@@ -9,7 +9,7 @@ interface ICErc20{
     function underlying() external view returns (address);
 }
 
-contract AdrastiaPriceOracle {
+contract AdrastiaPriceOracle is Ownable{
     mapping(address => uint256) backupPrices;
     event PricePosted(
         address asset,

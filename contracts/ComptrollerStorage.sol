@@ -26,6 +26,15 @@ contract UnitrollerAdminStorage {
 }
 
 contract ComptrollerV1Storage is UnitrollerAdminStorage {
+
+    struct CompMarketState {
+        // The market's last updated compBorrowIndex or compSupplyIndex
+        uint224 index;
+
+        // The block number the index was last updated at
+        uint32 block;
+    }
+
     /**
      * @notice Oracle which gives the price of any given asset
      */
@@ -110,4 +119,28 @@ contract ComptrollerV1Storage is UnitrollerAdminStorage {
 
     /// @notice isMarkertDelisted records the market which has been delisted by us.
     mapping(address => bool) public isMarkertDelisted;
+
+    /// @notice The portion of compRate that each market currently receives
+    mapping(address => uint) public compSpeeds;
+
+    /// @notice The COMP market supply state for each market
+    mapping(address => CompMarketState) public compSupplyState;
+
+    /// @notice The COMP market borrow state for each market
+    mapping(address => CompMarketState) public compBorrowState;
+
+    /// @notice The COMP borrow index for each market for each supplier as of the last time they accrued COMP
+    mapping(address => mapping(address => uint)) public compSupplierIndex;
+
+    /// @notice The COMP borrow index for each market for each borrower as of the last time they accrued COMP
+    mapping(address => mapping(address => uint)) public compBorrowerIndex;
+
+    /// @notice The COMP accrued but not yet transferred to each user
+    mapping(address => uint) public compAccrued;
+
+    /// @notice The rate at which comp is distributed to the corresponding borrow market (per block)
+    mapping(address => uint) public compBorrowSpeeds;
+
+    /// @notice The rate at which comp is distributed to the corresponding supply market (per block)
+    mapping(address => uint) public compSupplySpeeds;
 }
