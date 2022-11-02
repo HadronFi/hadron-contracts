@@ -14,7 +14,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     Gov = 'GovIRM',
   }
 
-  const hName = 'WEVMOS'
+  const hName = 'OSMO'
   const interestRateModel = IRM.Major
 
   const hSymbol = 'h' + hName

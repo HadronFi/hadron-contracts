@@ -6,11 +6,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const {deploy, get, getOrNull,log, save} = deployments;
   const {deployer, poster, admin} = await getNamedAccounts();
 
-  const SimplePriceOracle = await getOrNull("SimplePriceOracle");
-  if(SimplePriceOracle){
-    log(`reusing SimplePriceOracle at ${SimplePriceOracle.address}`);
+  const AdrastiaPriceOracle = await getOrNull("AdrastiaPriceOracle");
+  if(AdrastiaPriceOracle){
+    log(`reusing AdrastiaPriceOracle at ${AdrastiaPriceOracle.address}`);
   } else{
-    await deploy('SimplePriceOracle', {
+    await deploy('AdrastiaPriceOracle', {
       from: deployer,
       log: true,
     });
