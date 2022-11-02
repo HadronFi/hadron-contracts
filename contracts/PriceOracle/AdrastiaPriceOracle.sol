@@ -69,4 +69,16 @@ contract AdrastiaPriceOracle is Ownable{
         emit PricePosted(asset, backupPrices[asset], price, price);
         backupPrices[asset] = price;
     }
+
+    /**
+     * @notice set the price of the underlying asset of the ctoken
+     * @param cToken The address of the cToken
+     * @param price The price to set the asset to: 
+     * If WEVMOS, set the price with 6 decimals, otherwise use 18 decimals but denominate the price in WEVMOS
+     */
+    function setUnderlyingPrice(address cToken, uint256 price) public onlyOwner {
+        address asset = ICErc20(address(cToken)).underlying();
+        emit PricePosted(asset, backupPrices[asset], price, price);
+        backupPrices[asset] = price;
+    }
 }

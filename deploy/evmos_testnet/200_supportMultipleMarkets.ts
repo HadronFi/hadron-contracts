@@ -95,42 +95,46 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     },
   ]
 
-  for (let i = 0; i < markets.length; i++) {
-    await execute(
-      'AdrastiaPriceOracle',
-      { from: deployer, log: true },
-      'setUnderlyingPrice',
-      markets[i]['markets'],
-      markets[i]['price'],
-    )
-    await execute(
-      'CTokenAdmin',
-      { from: deployer, log: true },
-      '_setReserveFactor',
-      markets[i]['markets'],
-      markets[i]['rfs'],
-    )
-    await execute(
-      'Comptroller',
-      { from: deployer, log: true },
-      '_supportMarket',
-      markets[i]['markets'],
-      1,
-    )
-    await execute(
-      'Comptroller',
-      { from: deployer, log: true },
-      '_setCollateralFactor',
-      markets[i]['markets'],
-      markets[i]['cfs'],
-    )
-  }
+  // for (let i = 0; i < markets.length; i++) {
+  //   await execute(
+  //     'AdrastiaPriceOracle',
+  //     { from: deployer, log: true },
+  //     'setUnderlyingPrice',
+  //     markets[i]['markets'],
+  //     markets[i]['price'],
+  //   )
+  //   await execute(
+  //     'CTokenAdmin',
+  //     { from: deployer, log: true },
+  //     '_setReserveFactor',
+  //     markets[i]['markets'],
+  //     markets[i]['rfs'],
+  //   )
+  //   await execute(
+  //     'Comptroller',
+  //     { from: deployer, log: true },
+  //     '_supportMarket',
+  //     markets[i]['markets'],
+  //     1,
+  //   )
+  //   await execute(
+  //     'Comptroller',
+  //     { from: deployer, log: true },
+  //     '_setCollateralFactor',
+  //     markets[i]['markets'],
+  //     markets[i]['cfs'],
+  //   )
+  // }
 
+  let underlyingMapping = []
+  for (let i = 0; i < markets.length; i++) {
+    underlyingMapping.push(markets[i]['markets'])
+  }
   await execute(
     'FlashloanLender',
     { from: deployer },
     'updateUnderlyingMapping',
-    markets,
+    underlyingMapping,
   )
 }
 export default func
