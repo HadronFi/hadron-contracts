@@ -20,9 +20,13 @@ contract AdrastiaPriceOracle is Ownable{
     event ExpiredPrice(address asset, address oracle);
     event Price(uint112 price);
 
-    address aggregatedOracle = 0x51d3d22965Bb2CB2749f896B82756eBaD7812b6d;
-    address usdPeggedAggregatedOracle = 0xd850F64Eda6a62d625209711510f43cD49Ef8798;
-    address constant WEVMOS = 0xD4949664cD82660AaE99bEdc034a0deA8A0bd517;
+    address public aggregatedOracle = 0x51d3d22965Bb2CB2749f896B82756eBaD7812b6d;
+    address public usdPeggedAggregatedOracle = 0xd850F64Eda6a62d625209711510f43cD49Ef8798;
+    address public WEVMOS = 0xD4949664cD82660AaE99bEdc034a0deA8A0bd517;
+
+    function setWEVMOSAddress(address wevmos) public onlyOwner{
+        WEVMOS = wevmos;
+    }
 
     function setOracleAddress(address aggregated, address usdPeggedAggregated) public onlyOwner {
         require(aggregated != address(0), "Aggregated addr not set");

@@ -178,7 +178,7 @@ contract Comptroller is
     {
         Market storage marketToJoin = markets[address(cToken)];
 
-        require(marketToJoin.isListed, "market not listed");
+        require(marketToJoin.isListed);
 
         if (marketToJoin.version == Version.COLLATERALCAP) {
             // register collateral for the borrower if the token is CollateralCap version.
@@ -217,15 +217,14 @@ contract Comptroller is
         /* Get sender tokensHeld and amountOwed underlying from the cToken */
         (uint256 oErr, uint256 tokensHeld, uint256 amountOwed, ) = cToken
             .getAccountSnapshot(msg.sender);
-        require(oErr == 0, "exitMarket: getAccountSnapshot failed"); // semi-opaque error code
+        require(oErr == 0); // semi-opaque error code
 
         /* Fail if the sender has a borrow balance */
-        require(amountOwed == 0, "nonzero borrow balance");
+        require(amountOwed == 0);
 
         /* Fail if the sender is not permitted to redeem all of their tokens */
         require(
-            redeemAllowedInternal(cTokenAddress, msg.sender, tokensHeld) == 0,
-            "failed to exit market"
+            redeemAllowedInternal(cTokenAddress, msg.sender, tokensHeld) == 0
         );
 
         Market storage marketToExit = markets[cTokenAddress];
@@ -295,10 +294,10 @@ contract Comptroller is
         uint256 mintAmount
     ) external returns (uint256) {
         // Pausing is a very serious situation - we revert to sound the alarms
-        require(!mintGuardianPaused[cToken], "mint is paused");
-        require(!isCreditAccount(minter, cToken), "credit account cannot mint");
+        require(!mintGuardianPaused[cToken]);
+        require(!isCreditAccount(minter, cToken));
 
-        require(isMarketListed(cToken), "market not listed");
+        require(isMarketListed(cToken));
 
         uint256 supplyCap = supplyCaps[cToken];
         // Supply cap of 0 corresponds to unlimited supplying
@@ -312,10 +311,10 @@ contract Comptroller is
                 totalBorrows,
                 totalReserves
             );
-            require(mathErr == MathError.NO_ERROR, "totalSupplies failed");
+            require(mathErr == MathError.NO_ERROR);
 
             uint256 nextTotalSupplies = add_(totalSupplies, mintAmount);
-            require(nextTotalSupplies < supplyCap, "market supply cap reached");
+            require(nextTotalSupplies < supplyCap);
         }
 
         return uint256(Error.NO_ERROR);
@@ -367,12 +366,10 @@ contract Comptroller is
         uint256 redeemTokens
     ) internal view returns (uint256) {
         require(
-            isMarketListed(cToken) || isMarkertDelisted[cToken],
-            "market not listed"
+            isMarketListed(cToken) || isMarkertDelisted[cToken]
         );
         require(
-            !isCreditAccount(redeemer, cToken),
-            "credit account cannot redeem"
+            !isCreditAccount(redeemer, cToken)
         );
 
         /* If the redeemer is not 'in' the market, then we can bypass the liquidity check */
@@ -391,8 +388,8 @@ contract Comptroller is
                 redeemTokens,
                 0
             );
-        require(err == Error.NO_ERROR, "failed to get account liquidity");
-        require(shortfall == 0, "insufficient liquidity");
+        require(err == Error.NO_ERROR);
+        require(shortfall == 0);
 
         return uint256(Error.NO_ERROR);
     }
@@ -416,7 +413,7 @@ contract Comptroller is
 
         // Require tokens is zero or amount is also zero
         if (redeemTokens == 0 && redeemAmount > 0) {
-            revert("redeemTokens zero");
+            revert();
         }
     }
 
@@ -433,32 +430,31 @@ contract Comptroller is
         uint256 borrowAmount
     ) external returns (uint256) {
         // Pausing is a very serious situation - we revert to sound the alarms
-        require(!borrowGuardianPaused[cToken], "borrow is paused");
+        require(!borrowGuardianPaused[cToken]);
 
-        require(isMarketListed(cToken), "market not listed");
+        require(isMarketListed(cToken));
 
         if (!markets[cToken].accountMembership[borrower]) {
             // only cTokens may call borrowAllowed if borrower not in market
-            require(msg.sender == cToken, "sender must be cToken");
+            require(msg.sender == cToken);
 
             // attempt to add borrower to the market
             require(
-                addToMarketInternal(CToken(cToken), borrower) == Error.NO_ERROR,
-                "failed to add market"
+                addToMarketInternal(CToken(cToken), borrower) == Error.NO_ERROR
             );
 
             // it should be impossible to break the important invariant
             assert(markets[cToken].accountMembership[borrower]);
         }
 
-        require(oracle.getUnderlyingPrice(CToken(cToken)) != 0, "price error");
+        require(oracle.getUnderlyingPrice(CToken(cToken)) != 0);
 
         uint256 borrowCap = borrowCaps[cToken];
         // Borrow cap of 0 corresponds to unlimited borrowing
         if (borrowCap != 0) {
             uint256 totalBorrows = CToken(cToken).totalBorrows();
             uint256 nextTotalBorrows = add_(totalBorrows, borrowAmount);
-            require(nextTotalBorrows < borrowCap, "market borrow cap reached");
+            require(nextTotalBorrows < borrowCap);
         }
 
         uint256 creditLimit = creditLimits[borrower][cToken];
@@ -466,10 +462,9 @@ contract Comptroller is
         if (creditLimit > 0) {
             (uint256 oErr, , uint256 borrowBalance, ) = CToken(cToken)
                 .getAccountSnapshot(borrower);
-            require(oErr == 0, "snapshot error");
+            require(oErr == 0);
             require(
-                creditLimit >= add_(borrowBalance, borrowAmount),
-                "insufficient credit limit"
+                creditLimit >= add_(borrowBalance, borrowAmount)
             );
         } else {
             (
@@ -482,8 +477,8 @@ contract Comptroller is
                     0,
                     borrowAmount
                 );
-            require(err == Error.NO_ERROR, "failed to get account liquidity");
-            require(shortfall == 0, "insufficient liquidity");
+            require(err == Error.NO_ERROR);
+            require(shortfall == 0);
         }
         return uint256(Error.NO_ERROR);
     }
@@ -528,14 +523,12 @@ contract Comptroller is
         repayAmount;
 
         require(
-            isMarketListed(cToken) || isMarkertDelisted[cToken],
-            "market not listed"
+            isMarketListed(cToken) || isMarkertDelisted[cToken]
         );
 
         if (isCreditAccount(borrower, cToken)) {
             require(
-                borrower == payer,
-                "cannot repay on behalf of credit account"
+                borrower == payer
             );
         }
 
@@ -585,24 +578,22 @@ contract Comptroller is
         uint256 repayAmount
     ) external returns (uint256) {
         require(
-            !isCreditAccount(borrower, cTokenBorrowed),
-            "cannot liquidate credit account"
+            !isCreditAccount(borrower, cTokenBorrowed)
         );
 
         // Shh - currently unused
         liquidator;
 
         require(
-            isMarketListed(cTokenBorrowed) && isMarketListed(cTokenCollateral),
-            "market not listed"
+            isMarketListed(cTokenBorrowed) && isMarketListed(cTokenCollateral)
         );
 
         /* The borrower must have shortfall in order to be liquidatable */
         (Error err, , uint256 shortfall) = getAccountLiquidityInternal(
             borrower
         );
-        require(err == Error.NO_ERROR, "failed to get account liquidity");
-        require(shortfall > 0, "insufficient shortfall");
+        require(err == Error.NO_ERROR);
+        require(shortfall > 0);
 
         /* The liquidator may not repay more than what is allowed by the closeFactor */
         uint256 borrowBalance = CToken(cTokenBorrowed).borrowBalanceStored(
@@ -665,10 +656,9 @@ contract Comptroller is
         uint256 seizeTokens
     ) external returns (uint256) {
         // Pausing is a very serious situation - we revert to sound the alarms
-        require(!seizeGuardianPaused, "seize is paused");
+        require(!seizeGuardianPaused);
         require(
-            !isCreditAccount(borrower, cTokenBorrowed),
-            "cannot sieze from credit account"
+            !isCreditAccount(borrower, cTokenBorrowed)
         );
 
         // Shh - currently unused
@@ -676,13 +666,11 @@ contract Comptroller is
         seizeTokens;
 
         require(
-            isMarketListed(cTokenBorrowed) && isMarketListed(cTokenCollateral),
-            "market not listed"
+            isMarketListed(cTokenBorrowed) && isMarketListed(cTokenCollateral)
         );
         require(
             CToken(cTokenCollateral).comptroller() ==
-                CToken(cTokenBorrowed).comptroller(),
-            "comptroller mismatched"
+                CToken(cTokenBorrowed).comptroller()
         );
 
         return uint256(Error.NO_ERROR);
@@ -731,10 +719,9 @@ contract Comptroller is
         uint256 transferTokens
     ) external returns (uint256) {
         // Pausing is a very serious situation - we revert to sound the alarms
-        require(!transferGuardianPaused, "transfer is paused");
+        require(!transferGuardianPaused);
         require(
-            !isCreditAccount(dst, cToken),
-            "cannot transfer to a credit account"
+            !isCreditAccount(dst, cToken)
         );
 
         // Shh - currently unused
@@ -793,7 +780,7 @@ contract Comptroller is
      * @param newVersion The new version
      */
     function updateCTokenVersion(address cToken, Version newVersion) external {
-        require(msg.sender == cToken, "cToken only");
+        require(msg.sender == cToken);
 
         // This function will be called when a new CToken implementation becomes active.
         // If a new CToken is newly created, this market is not listed yet. The version of
@@ -1462,12 +1449,11 @@ contract Comptroller is
     }
 
     function _setMintPaused(CToken cToken, bool state) public returns (bool) {
-        require(isMarketListed(address(cToken)), "market not listed");
+        require(isMarketListed(address(cToken)));
         require(
-            msg.sender == pauseGuardian || msg.sender == admin,
-            "guardian or admin only"
+            msg.sender == pauseGuardian || msg.sender == admin
         );
-        require(msg.sender == admin || state == true, "admin only");
+        require(msg.sender == admin || state == true);
 
         mintGuardianPaused[address(cToken)] = state;
         emit ActionPaused2(cToken, "Mint", state);
@@ -1475,12 +1461,11 @@ contract Comptroller is
     }
 
     function _setBorrowPaused(CToken cToken, bool state) public returns (bool) {
-        require(isMarketListed(address(cToken)), "market not listed");
+        require(isMarketListed(address(cToken)));
         require(
-            msg.sender == pauseGuardian || msg.sender == admin,
-            "guardian or admin only"
+            msg.sender == pauseGuardian || msg.sender == admin
         );
-        require(msg.sender == admin || state == true, "admin only");
+        require(msg.sender == admin || state == true);
 
         borrowGuardianPaused[address(cToken)] = state;
         emit ActionPaused2(cToken, "Borrow", state);
@@ -1825,18 +1810,6 @@ contract Comptroller is
     /*** Comp Distribution Admin ***/
 
     /**
-     * @notice Transfer COMP to the recipient
-     * @dev Note: If there is not enough COMP, we do not perform the transfer all.
-     * @param recipient The address of the recipient to transfer COMP to
-     * @param amount The amount of COMP to (possibly) transfer
-     */
-    function _grantComp(address recipient, uint256 amount) public {
-        require(msg.sender == admin, "only admin can grant comp");
-        uint256 amountLeft = grantCompInternal(recipient, amount);
-        require(amountLeft == 0, "insufficient comp for grant");
-    }
-
-    /**
      * @notice Set COMP borrow and supply speeds for the specified markets.
      * @param cTokens The markets whose COMP speed to update.
      * @param supplySpeeds New supply-side COMP speed for the corresponding market.
@@ -1862,6 +1835,22 @@ contract Comptroller is
     }
 
     /**
+     * @notice Return the address of the COMP token
+     * @return The address of WEVMOS
+     */
+    function getCompAddress() public view returns (address) {
+        return compAddr;
+    }
+
+    /**
+     * @notice Return the address of the COMP token
+     * @return The address of WEVMOS
+     */
+    function setCompAddress(address token) public {
+        compAddr = token;
+    }
+
+    /**
      * @notice Return all of the markets
      * @dev The automatic getter may be used to access an individual market.
      * @return The list of market addresses
@@ -1884,13 +1873,5 @@ contract Comptroller is
 
     function getBlockNumber() public view returns (uint256) {
         return block.number;
-    }
-
-    /**
-     * @notice Return the address of the COMP token
-     * @return The address of WEVMOS
-     */
-    function getCompAddress() public view returns (address) {
-        return 0xD4949664cD82660AaE99bEdc034a0deA8A0bd517;
     }
 }

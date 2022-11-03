@@ -143,4 +143,6 @@ contract ComptrollerV1Storage is UnitrollerAdminStorage {
 
     /// @notice The rate at which comp is distributed to the corresponding supply market (per block)
     mapping(address => uint) public compSupplySpeeds;
+
+    address compAddr;
 }

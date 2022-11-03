@@ -56,7 +56,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       parseEther('0.01'),
     ], // borrow speed(int) - comp per block
   ]
-  if (!Comptroller) {
+  if (Comptroller) {
     await execute(
       'Comptroller',
       { from: deployer, log: true },
@@ -65,7 +65,23 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       speeds[1],
       speeds[2],
     )
+
+    await execute(
+      'Comptroller',
+      { from: deployer, log: true },
+      'setCompAddress',
+      (await get('WEVMOS')).address,
+    )
+
+    await execute(
+      'WEVMOS',
+      { from: deployer, log: true },
+      'transfer',
+      (await get('Comptroller')).address,
+      "100000",
+    )
   }
 }
 export default func
 func.tags = ['Unitroller']
+// func.skip = async () => true
