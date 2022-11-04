@@ -6,21 +6,21 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy, execute, getOrNull, log } = deployments
 
   const { deployer, admin } = await getNamedAccounts()
-  const Unitroller = await getOrNull('Unitroller')
+  // Mint 1,000,000 of each token
   const tokens = [
-    ['1000000', 'ATOM', 'ATOM', '18'],
-    ['1000000', 'Axelar USDC', 'axlUSDC', '6'],
-    ['1000000', 'Axelar WBTC', 'axlWBTC', '18'],
-    ['1000000', 'Axelar WETH', 'axlWETH', '18'],
-    ['1000000', 'Celer USDC', 'ceUSDC', '6'],
-    ['1000000', 'Celer WETH', 'ceWETH', '18'],
-    ['1000000', 'Gravity DAI', 'gDAI', '18'],
-    ['1000000', 'Gravity USDC', 'gUSDC', '6'],
-    ['1000000', 'Gravity USDT', 'gUSDT', '6'],
-    ['1000000', 'Gravity WETH', 'gWETH', '18'],
-    ['1000000', 'Juno', 'JUNO', '18'],
-    ['1000000', 'Osmosis', 'OSMO', '18'],
-    ['10000000', 'Wrapped Evmos', 'WEVMOS', '18'],
+    ['10000000000000000000000000', 'ATOM', 'ATOM', '18'],
+    ['1000000000000', 'Axelar USDC', 'axlUSDC', '6'],
+    ['10000000000000000000000000', 'Axelar WBTC', 'axlWBTC', '18'],
+    ['10000000000000000000000000', 'Axelar WETH', 'axlWETH', '18'],
+    ['1000000000000', 'Celer USDC', 'ceUSDC', '6'],
+    ['10000000000000000000000000', 'Celer WETH', 'ceWETH', '18'],
+    ['10000000000000000000000000', 'Gravity DAI', 'gDAI', '18'],
+    ['1000000000000', 'Gravity USDC', 'gUSDC', '6'],
+    ['1000000000000', 'Gravity USDT', 'gUSDT', '6'],
+    ['10000000000000000000000000', 'Gravity WETH', 'gWETH', '18'],
+    ['10000000000000000000000000', 'Juno', 'JUNO', '18'],
+    ['10000000000000000000000000', 'Osmosis', 'OSMO', '18'],
+    ['10000000000000000000000000', 'Wrapped Evmos', 'WEVMOS', '18'],
   ]
   for (let i = 0; i < tokens.length; i++) {
     let [supply, name, symbol, decimals] = [

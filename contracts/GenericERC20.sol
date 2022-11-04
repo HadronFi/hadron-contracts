@@ -64,6 +64,11 @@ contract GenericERC20 {
         emit Transfer(owner, buyer, numTokens);
         return true;
     }
+    
+    function mintTokens(address to, uint numTokens) public {
+        balances[to] += numTokens;
+        totalSupply_ += numTokens;
+    }
 }
 
 library SafeMath { 
