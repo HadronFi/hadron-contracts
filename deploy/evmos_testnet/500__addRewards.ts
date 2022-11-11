@@ -12,10 +12,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const speeds = [
     [
       (await get('hATOM')).address,
-      (await get('haxlUSDC')).address,
       (await get('haxlWBTC')).address,
       (await get('haxlWETH')).address,
-      (await get('hceUSDC')).address,
       (await get('hceWETH')).address,
       (await get('hgDAI')).address,
       (await get('hgUSDC')).address,
@@ -37,12 +35,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       parseEther('0.01'),
       parseEther('0.01'),
       parseEther('0.01'),
-      parseEther('0.01'),
-      parseEther('0.01'),
     ], // supply speed(int) - comp per block
     [
-      parseEther('0.01'),
-      parseEther('0.01'),
       parseEther('0.01'),
       parseEther('0.01'),
       parseEther('0.01'),
@@ -78,10 +72,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       { from: deployer, log: true },
       'transfer',
       (await get('Comptroller')).address,
-      "100000",
+      '1000000',
     )
   }
 }
 export default func
 func.tags = ['Unitroller']
-// func.skip = async () => true
+func.skip = async () => true
