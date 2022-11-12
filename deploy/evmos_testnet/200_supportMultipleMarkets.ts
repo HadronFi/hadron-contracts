@@ -99,40 +99,40 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       markets[i]['markets'],
       markets[i]['price'],
     )
-    // await execute(
-    //   'CTokenAdmin',
-    //   { from: deployer, log: true },
-    //   '_setReserveFactor',
-    //   markets[i]['markets'],
-    //   markets[i]['rfs'],
-    // )
-    // await execute(
-    //   'Comptroller',
-    //   { from: deployer, log: true },
-    //   '_supportMarket',
-    //   markets[i]['markets'],
-    //   1,
-    // )
-    // await execute(
-    //   'Comptroller',
-    //   { from: deployer, log: true },
-    //   '_setCollateralFactor',
-    //   markets[i]['markets'],
-    //   markets[i]['cfs'],
-    // )
+    await execute(
+      'CTokenAdmin',
+      { from: deployer, log: true },
+      '_setReserveFactor',
+      markets[i]['markets'],
+      markets[i]['rfs'],
+    )
+    await execute(
+      'Comptroller',
+      { from: deployer, log: true },
+      '_supportMarket',
+      markets[i]['markets'],
+      1,
+    )
+    await execute(
+      'Comptroller',
+      { from: deployer, log: true },
+      '_setCollateralFactor',
+      markets[i]['markets'],
+      markets[i]['cfs'],
+    )
   }
 
   let underlyingMapping = []
   for (let i = 0; i < markets.length; i++) {
     underlyingMapping.push(markets[i]['markets'])
   }
-  // await execute(
-  //   'FlashloanLender',
-  //   { from: deployer },
-  //   'updateUnderlyingMapping',
-  //   underlyingMapping,
-  // )
+  await execute(
+    'FlashloanLender',
+    { from: deployer },
+    'updateUnderlyingMapping',
+    underlyingMapping,
+  )
 }
 export default func
 func.tags = ['Market']
-// func.skip = async () => true
+func.skip = async () => true
