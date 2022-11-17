@@ -89,7 +89,7 @@ contract GenericERC20 {
         totalSupply_ += 100 * 10**getDecimals();
     }
 
-    function getDecimals() public returns (uint8) {
+    function getDecimals() public returns (uint256) {
         return decimals;
     }
 }
