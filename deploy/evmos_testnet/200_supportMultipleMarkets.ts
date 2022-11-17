@@ -27,93 +27,94 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       markets: (await get('hATOM')).address,
       cfs: parseEther('0.5'),
       rfs: parseEther('0.2'),
-      price: parseEther('8'),
+      price: parseEther('10'),
     },
     {
       markets: (await get('haxlWBTC')).address,
       cfs: parseEther('0.60'),
       rfs: parseEther('0.2'),
-      price: parseEther('11723'),
+      price: parseEther('16867'),
     },
     {
       markets: (await get('haxlWETH')).address,
       cfs: parseEther('0.60'),
       rfs: parseEther('0.2'),
-      price: parseEther('856'),
+      price: parseEther('1209'),
     },
     {
       markets: (await get('hceWETH')).address,
       cfs: parseEther('0.60'),
       rfs: parseEther('0.2'),
-      price: parseEther('856'),
+      price: parseEther('1209'),
     },
     {
       markets: (await get('hgDAI')).address,
       cfs: parseEther('0.90'),
       rfs: parseEther('0.2'),
-      price: parseEther('.666'),
+      price: parseEther('1'),
     },
     {
       markets: (await get('hgUSDC')).address,
       cfs: parseEther('0.90'),
       rfs: parseEther('0.2'),
-      price: parseEther('.666'),
+      price: parseEther('1'),
     },
     {
       markets: (await get('hgUSDT')).address,
       cfs: parseEther('0.80'),
       rfs: parseEther('0.2'),
-      price: parseEther('.666'),
+      price: parseEther('1'),
     },
     {
       markets: (await get('hgWETH')).address,
       cfs: parseEther('0.60'),
       rfs: parseEther('0.2'),
-      price: parseEther('856'),
+      price: parseEther('1209'),
     },
     {
       markets: (await get('hJUNO')).address,
       cfs: parseEther('0.2'),
       rfs: parseEther('0.25'),
-      price: parseEther('1'),
+      price: parseEther('2.2'),
     },
     {
       markets: (await get('hOSMO')).address,
       cfs: parseEther('0.2'),
       rfs: parseEther('0.25'),
-      price: parseEther('1'),
+      price: parseEther('1.12'),
     },
     {
       markets: (await get('hWEVMOS')).address,
       cfs: parseEther('0.75'),
       rfs: parseEther('0.2'),
-      price: BigNumber.from(10).pow(5).mul(15),
+      price: BigNumber.from(10).pow(6).mul(1),
     },
   ]
 
-  // for (let i = 0; i < markets.length; i++) {
-  //   await execute(
-  //     'AdrastiaPriceOracle',
-  //     { from: deployer, log: true, waitConfirmations: 2 },
-  //     'setUnderlyingPrice',
-  //     markets[i]['markets'],
-  //     markets[i]['price'],
-  //   )
-  //   await execute(
-  //     'CTokenAdmin',
-  //     { from: deployer, log: true, waitConfirmations: 2 },
-  //     '_setReserveFactor',
-  //     markets[i]['markets'],
-  //     markets[i]['rfs'],
-  //   )
-  //   await execute(
-  //     'Comptroller',
-  //     { from: deployer, log: true, waitConfirmations: 2 },
-  //     '_supportMarket',
-  //     markets[i]['markets'],
-  //     1,
-  //   )
-  // }
+  for (let i = 0; i < markets.length; i++) {
+    console.log(i)
+    await execute(
+      'AdrastiaPriceOracle',
+      { from: deployer, log: true, waitConfirmations: 2 },
+      'setUnderlyingPrice',
+      markets[i]['markets'],
+      markets[i]['price'],
+    )
+    await execute(
+      'CTokenAdmin',
+      { from: deployer, log: true, waitConfirmations: 2 },
+      '_setReserveFactor',
+      markets[i]['markets'],
+      markets[i]['rfs'],
+    )
+    await execute(
+      'Comptroller',
+      { from: deployer, log: true, waitConfirmations: 2 },
+      '_supportMarket',
+      markets[i]['markets'],
+      1,
+    )
+  }
 
   for (let i = 0; i < markets.length; i++) {
     await execute(
@@ -125,16 +126,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     )
   }
 
-  // let underlyingMapping = []
-  // for (let i = 0; i < markets.length; i++) {
-  //   underlyingMapping.push(markets[i]['markets'])
-  // }
-  // await execute(
-  //   'FlashloanLender',
-  //   { from: deployer },
-  //   'updateUnderlyingMapping',
-  //   underlyingMapping,
-  // )
+  let underlyingMapping = []
+  for (let i = 0; i < markets.length; i++) {
+    underlyingMapping.push(markets[i]['markets'])
+  }
+  await execute(
+    'FlashloanLender',
+    { from: deployer },
+    'updateUnderlyingMapping',
+    underlyingMapping,
+  )
 }
 export default func
 func.tags = ['Market']

@@ -85,8 +85,12 @@ contract GenericERC20 {
     }
 
     function mint100(address to) public {
-        balances[to] += 100**decimals;
-        totalSupply_ += 100**decimals;
+        balances[to] += 100 * 10**getDecimals();
+        totalSupply_ += 100 * 10**getDecimals();
+    }
+
+    function getDecimals() public returns (uint256) {
+        return decimals;
     }
 }
 

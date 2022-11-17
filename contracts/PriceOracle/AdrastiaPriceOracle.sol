@@ -1,5 +1,6 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/IERC20.sol";
 
 interface IPriceOracle {
     function consultPrice(address token, uint256 maxAge)
@@ -49,13 +50,13 @@ contract AdrastiaPriceOracle is Ownable {
     /**
      * @notice Get the underlying price of a cToken asset
      * @param cToken The cToken to get the underlying price of
-     * @return The underlying asset price mantissa (scaled by 1e18).
-     *  Zero means the price is unavailable.
+     * @return The price of the asset in USD as an unsigned integer scaled up by
+     * 10 ^ (36 - underlying asset decimals). E.g. WBTC has 8 decimal places, so the return value is scaled up by 1e28.
      */
     function getUnderlyingPrice(address cToken) public view returns (uint256) {
         address underlyingAsset = ICErc20(address(cToken)).underlying();
-        uint256 evmosPrice;
-        uint256 assetPrice;
+        uint256 evmosPrice; //Should be 10**6 * evmos price. ie 1 dollar = 1e6
+        uint256 assetPrice; //Should be 10**18 * asset price. ie 1 dollar = 1e18
         // Gets the price of `token` with the requirement that the price is 2 hours old or less
         try
             IPriceOracle(usdPeggedAggregatedOracle).consultPrice(
@@ -69,7 +70,8 @@ contract AdrastiaPriceOracle is Ownable {
         }
         // USD Pegged Aggregated Oracle is denominated with 6 decimals
         if (underlyingAsset == WEVMOS) {
-            return evmosPrice * 1e12;
+            return (evmosPrice *
+                10**(36 - IERC20(underlyingAsset).decimals() - 6));
         }
         try
             IPriceOracle(aggregatedOracle).consultPrice(
@@ -79,9 +81,12 @@ contract AdrastiaPriceOracle is Ownable {
         returns (uint112 adrastiaPrice) {
             assetPrice = uint256(adrastiaPrice);
         } catch (bytes memory) {
-            assetPrice = backupPrices[underlyingAsset];
+            assetPrice =
+                ((backupPrices[underlyingAsset] * evmosPrice) *
+                    10**(36 - IERC20(underlyingAsset).decimals())) /
+                10**(18 + 6);
         }
-        return uint256((evmosPrice * assetPrice) / 1e6);
+        return assetPrice;
     }
 
     /**
