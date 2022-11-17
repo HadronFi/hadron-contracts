@@ -55,8 +55,8 @@ contract AdrastiaPriceOracle is Ownable {
      */
     function getUnderlyingPrice(address cToken) public view returns (uint256) {
         address underlyingAsset = ICErc20(address(cToken)).underlying();
-        uint256 evmosPrice;
-        uint256 assetPrice;
+        uint256 evmosPrice; //Should be 10**6 * evmos price. ie 1 dollar = 1e6
+        uint256 assetPrice; //Should be 10**18 * asset price. ie 1 dollar = 1e18
         // Gets the price of `token` with the requirement that the price is 2 hours old or less
         try
             IPriceOracle(usdPeggedAggregatedOracle).consultPrice(
@@ -82,8 +82,9 @@ contract AdrastiaPriceOracle is Ownable {
             assetPrice = uint256(adrastiaPrice);
         } catch (bytes memory) {
             assetPrice =
-                (backupPrices[underlyingAsset] * evmosPrice) *
-                10**(36 - IERC20(underlyingAsset).decimals() - 18 - 6);
+                ((backupPrices[underlyingAsset] * evmosPrice) *
+                    10**(36 - IERC20(underlyingAsset).decimals())) /
+                10**(18 + 6);
         }
         return assetPrice;
     }

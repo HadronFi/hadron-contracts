@@ -124,8 +124,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       markets[i]['markets'],
       markets[i]['cfs'],
     )
-    ;(await read('CompoundLens', 'cTokenMetadata', markets[i]['markets']))
-      .collateralFactorMantissa
   }
 
   let underlyingMapping = []
